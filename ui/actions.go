@@ -1,0 +1,71 @@
+package ui
+
+import (
+	"fmt"
+	"strings"
+	"time"
+)
+
+func (m *model) applyFilter(q string) {
+	q = strings.TrimSpace(q)
+	if q == m.query {
+		return
+	}
+
+	prev := m.query
+	m.query = q
+	m.tbl = m.tbl.WithFilterInputValue(q)
+
+	if q == "" {
+		if prev != "" {
+			m.addLog(levelInfo, "filter cleared · %d tasks", len(m.items))
+		}
+		return
+	}
+
+	n := m.tbl.TotalRows()
+	if n == 0 {
+		m.addLog(levelWarning, "no matches for %q", q)
+		return
+	}
+	m.addLog(levelInfo, "filter %q · %d matches", q, n)
+}
+
+func (m *model) toggleSelected() {
+	row := m.tbl.HighlightedRow()
+	if row.Data == nil {
+		return
+	}
+
+	id, ok := row.Data[columnKeyID].(int)
+	if !ok || id < 0 || id >= len(m.items) {
+		return
+	}
+
+	m.items[id].done = !m.items[id].done
+	if m.items[id].done {
+		m.addLog(levelSuccess, "completed: %s", m.items[id].title)
+	} else {
+		m.addLog(levelInfo, "reopened: %s", m.items[id].title)
+	}
+	m.refreshTableRows()
+}
+
+func (m *model) addLog(level logLevel, format string, args ...any) {
+	atBottom := m.logs.AtBottom()
+	m.entries = append(m.entries, logEntry{
+		at:    time.Now(),
+		level: level,
+		msg:   fmt.Sprintf(format, args...),
+	})
+
+	const maxLogEntries = 300
+	if len(m.entries) > maxLogEntries {
+		m.entries = append([]logEntry(nil), m.entries[len(m.entries)-maxLogEntries:]...)
+	}
+
+	m.refreshLogs()
+	if atBottom {
+		m.logs.GotoBottom()
+	}
+}
