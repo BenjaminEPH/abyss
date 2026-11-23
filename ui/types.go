@@ -19,7 +19,7 @@ const (
 	columnKeyRepository  = "repository"
 	columnKeySize        = "size"
 	columnKeyDescription = "description"
-	columnKeyIsDone      = "is_done"
+	columnKeyInstalled   = "installed"
 )
 
 type item struct {
@@ -29,7 +29,7 @@ type item struct {
 	repository  string
 	size        string
 	description string
-	done        bool
+	installed   bool
 }
 
 type logLevel int

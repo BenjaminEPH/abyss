@@ -138,12 +138,12 @@ func (m model) progressBar() *tea.ProgressBar {
 		return nil
 	}
 
-	done := 0
+	installed := 0
 	for _, it := range m.items {
-		if it.done {
-			done++
+		if it.installed {
+			installed++
 		}
 	}
 
-	return tea.NewProgressBar(tea.ProgressBarDefault, done*100/len(m.items))
+	return tea.NewProgressBar(tea.ProgressBarDefault, installed*100/len(m.items))
 }

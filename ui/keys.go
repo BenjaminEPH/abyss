@@ -35,7 +35,7 @@ func defaultKeyMap() keyMap {
 		),
 		Toggle: key.NewBinding(
 			key.WithKeys("enter", "space"),
-			key.WithHelp("⏎", "complete"),
+			key.WithHelp("⏎", "install/remove"),
 		),
 		Top: key.NewBinding(
 			key.WithKeys("g", "G", "home", "end"),

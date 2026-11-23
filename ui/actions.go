@@ -42,11 +42,11 @@ func (m *model) toggleSelected() {
 		return
 	}
 
-	m.items[id].done = !m.items[id].done
-	if m.items[id].done {
-		m.addLog(levelSuccess, "completed: %s", m.items[id].name)
+	m.items[id].installed = !m.items[id].installed
+	if m.items[id].installed {
+		m.addLog(levelSuccess, "installed: %s", m.items[id].name)
 	} else {
-		m.addLog(levelInfo, "reopened: %s", m.items[id].name)
+		m.addLog(levelInfo, "removed: %s", m.items[id].name)
 	}
 	m.refreshTableRows()
 }

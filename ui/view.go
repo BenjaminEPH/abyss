@@ -46,7 +46,7 @@ func (m model) View() tea.View {
 	searchPanel := renderPanel(m.theme, m.width, m.layout.searchH,
 		"⌕ SEARCH", m.searchBadge(), m.focus == focusSearch, searchBody)
 	mainPanel := renderPanel(m.theme, m.width, m.layout.mainH,
-		"▤ TASKS", m.mainBadge(), m.focus == focusMain, mainBody)
+		"▤ PACKAGES", m.mainBadge(), m.focus == focusMain, mainBody)
 	logPanel := renderPanel(m.theme, m.width, m.layout.logH,
 		"≡ LOG", m.logBadge(), m.focus == focusLog, m.logs.View())
 	footer := m.footerView(m.width)
@@ -138,19 +138,19 @@ func (m model) searchBadge() string {
 }
 
 func (m model) mainBadge() string {
-	done := 0
+	installed := 0
 	for _, it := range m.items {
-		if it.done {
-			done++
+		if it.installed {
+			installed++
 		}
 	}
 
 	pct := 0
 	if len(m.items) > 0 {
-		pct = done * 100 / len(m.items)
+		pct = installed * 100 / len(m.items)
 	}
 
-	badge := fmt.Sprintf("%d/%d · %d%%", m.tbl.TotalRows(), len(m.items), pct)
+	badge := fmt.Sprintf("%d/%d · %d%% installed", m.tbl.TotalRows(), len(m.items), pct)
 	if pages := m.tbl.MaxPages(); pages > 1 {
 		badge += fmt.Sprintf(" · page %d/%d", m.tbl.CurrentPage(), pages)
 	}

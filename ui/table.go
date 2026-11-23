@@ -13,7 +13,7 @@ func (m *model) rebuildTable() {
 		WithRows(m.buildTableRows()).
 		WithBaseStyle(lipgloss.NewStyle().Foreground(t.text).Align(lipgloss.Left)).
 		WithRowStyleFunc(func(input table.RowStyleFuncInput) lipgloss.Style {
-			done, _ := input.Row.Data[columnKeyIsDone].(bool)
+			installed, _ := input.Row.Data[columnKeyInstalled].(bool)
 
 			if input.IsHighlighted {
 				return lipgloss.NewStyle().
@@ -21,10 +21,9 @@ func (m *model) rebuildTable() {
 					Foreground(t.selectedFg).
 					Bold(true)
 			}
-			if done {
+			if installed {
 				return lipgloss.NewStyle().
-					Foreground(t.faint).
-					Strikethrough(true)
+					Foreground(t.success)
 			}
 			return lipgloss.NewStyle()
 		}).
@@ -77,7 +76,7 @@ func (m *model) buildTableRows() []table.Row {
 			columnKeyRepository:  it.repository,
 			columnKeySize:        it.size,
 			columnKeyDescription: it.description,
-			columnKeyIsDone:      it.done,
+			columnKeyInstalled:   it.installed,
 		}))
 	}
 

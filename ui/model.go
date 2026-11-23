@@ -45,9 +45,9 @@ func initialModel() model {
 		items: []item{
 			{name: "bash", version: "5.2.37", revision: "1", repository: "core", size: "1.8 MiB", description: "The GNU Bourne Again shell"},
 			{name: "coreutils", version: "9.5", revision: "2", repository: "core", size: "7.2 MiB", description: "The basic file, shell and text manipulation utilities"},
-			{name: "git", version: "2.47.1", revision: "1", repository: "extra", size: "14.5 MiB", description: "The fast distributed version control system", done: true},
+			{name: "git", version: "2.47.1", revision: "1", repository: "extra", size: "14.5 MiB", description: "The fast distributed version control system", installed: true},
 			{name: "go", version: "1.23.4", revision: "1", repository: "extra", size: "242.0 MiB", description: "Core compiler tools for the Go programming language"},
-			{name: "neovim", version: "0.10.3", revision: "1", repository: "extra", size: "28.4 MiB", description: "Fork of Vim aiming to improve user experience", done: true},
+			{name: "neovim", version: "0.10.3", revision: "1", repository: "extra", size: "28.4 MiB", description: "Fork of Vim aiming to improve user experience", installed: true},
 			{name: "ripgrep", version: "14.1.1", revision: "1", repository: "extra", size: "5.1 MiB", description: "A search tool that combines the usability of ag with the speed of grep"},
 		},
 	}
