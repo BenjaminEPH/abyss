@@ -12,7 +12,17 @@ const (
 )
 
 const (
+	tabPackages = iota
+	tabDetails
+	tabCount
+)
+
+var tabNames = [tabCount]string{"Packages", "Details"}
+
+const (
 	columnKeyID          = "id"
+	columnKeyIndex       = "index"
+	columnKeyStatus      = "status"
 	columnKeyName        = "name"
 	columnKeyVersion     = "version"
 	columnKeyRevision    = "revision"
@@ -49,6 +59,7 @@ type logEntry struct {
 
 type layout struct {
 	searchY, searchH int
+	tabsY, tabsH     int
 	mainY, mainH     int
 	logY, logH       int
 	footerY, footerH int

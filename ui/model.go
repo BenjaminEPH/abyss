@@ -12,11 +12,13 @@ import (
 type model struct {
 	width, height int
 	focus         int
+	tab           int
 	dark          bool
 	termFocused   bool
 
 	search  textinput.Model
-	tbl     table.Model
+	list    table.Model // packages tab
+	tbl     table.Model // details tab
 	logs    viewport.Model
 	help    help.Model
 	spinner spinner.Model

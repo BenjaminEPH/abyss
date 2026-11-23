@@ -6,6 +6,7 @@ import (
 
 type keyMap struct {
 	Focus  key.Binding
+	Tabs   key.Binding
 	Search key.Binding
 	Clear  key.Binding
 	Move   key.Binding
@@ -20,6 +21,10 @@ func defaultKeyMap() keyMap {
 		Focus: key.NewBinding(
 			key.WithKeys("tab"),
 			key.WithHelp("tab", "focus"),
+		),
+		Tabs: key.NewBinding(
+			key.WithKeys("[", "]", "1", "2", "alt+left", "alt+right"),
+			key.WithHelp("[/]", "tabs"),
 		),
 		Search: key.NewBinding(
 			key.WithKeys("/", "ctrl+k"),
@@ -53,12 +58,12 @@ func defaultKeyMap() keyMap {
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Focus, k.Search, k.Toggle, k.Help, k.Quit}
+	return []key.Binding{k.Focus, k.Tabs, k.Search, k.Toggle, k.Help, k.Quit}
 }
 
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Focus, k.Search, k.Clear},
+		{k.Focus, k.Tabs, k.Search, k.Clear},
 		{k.Move, k.Toggle, k.Top},
 		{k.Help, k.Quit},
 	}

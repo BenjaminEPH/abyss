@@ -37,26 +37,26 @@ func (m model) View() tea.View {
 	searchBody := m.searchView(contentW)
 
 	var mainBody string
-	if m.tbl.TotalRows() == 0 {
+	if m.visibleRows() == 0 {
 		mainBody = strings.Join(m.emptyState(contentW, max(1, m.layout.mainH-2)), "\n")
 	} else {
-		mainBody = m.tbl.View()
+		mainBody = m.activeTable().View()
 	}
 
 	searchPanel := renderPanel(m.theme, m.width, m.layout.searchH,
 		"⌕ SEARCH", m.searchBadge(), m.focus == focusSearch, searchBody)
 	mainPanel := renderPanel(m.theme, m.width, m.layout.mainH,
-		"▤ PACKAGES", m.mainBadge(), m.focus == focusMain, mainBody)
-	logPanel := renderPanel(m.theme, m.width, m.layout.logH,
-		"≡ LOG", m.logBadge(), m.focus == focusLog, m.logs.View())
+		"▤ "+strings.ToUpper(tabNames[m.tab]), m.mainBadge(), m.focus == focusMain, mainBody)
 	footer := m.footerView(m.width)
 
-	content := lipgloss.JoinVertical(lipgloss.Left,
-		searchPanel,
-		mainPanel,
-		logPanel,
-		footer,
-	)
+	sections := []string{searchPanel, m.tabBar(m.width), mainPanel}
+	if m.tab == tabDetails {
+		sections = append(sections, renderPanel(m.theme, m.width, m.layout.logH,
+			"≡ LOG", m.logBadge(), m.focus == focusLog, m.logs.View()))
+	}
+	sections = append(sections, footer)
+
+	content := lipgloss.JoinVertical(lipgloss.Left, sections...)
 
 	v := tea.NewView(content)
 	v.AltScreen = true
@@ -132,7 +132,7 @@ func (m model) searchBadge() string {
 		return "filtering…"
 	}
 	if m.query != "" {
-		return fmt.Sprintf("%d results", m.tbl.TotalRows())
+		return fmt.Sprintf("%d results", m.visibleRows())
 	}
 	return fmt.Sprintf("%d packages", len(m.items))
 }
@@ -150,9 +150,9 @@ func (m model) mainBadge() string {
 		pct = installed * 100 / len(m.items)
 	}
 
-	badge := fmt.Sprintf("%d/%d · %d%% installed", m.tbl.TotalRows(), len(m.items), pct)
-	if pages := m.tbl.MaxPages(); pages > 1 {
-		badge += fmt.Sprintf(" · page %d/%d", m.tbl.CurrentPage(), pages)
+	badge := fmt.Sprintf("%d/%d · %d%% installed", m.visibleRows(), len(m.items), pct)
+	if pages := m.maxPages(); pages > 1 {
+		badge += fmt.Sprintf(" · page %d/%d", m.currentPage(), pages)
 	}
 	return badge
 }

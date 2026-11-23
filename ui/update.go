@@ -90,6 +90,10 @@ func (m *model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 
 	if m.focus == focusSearch {
 		switch s {
+		case "alt+left":
+			return m.setTab(m.tab - 1)
+		case "alt+right":
+			return m.setTab(m.tab + 1)
 		case "esc":
 			if m.search.Value() != "" {
 				m.search.SetValue("")
@@ -127,6 +131,15 @@ func (m *model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 	}
 
 	switch {
+	case key.Matches(msg, m.keys.Tabs):
+		switch s {
+		case "[", "alt+left":
+			return m.setTab(m.tab - 1)
+		case "]", "alt+right":
+			return m.setTab(m.tab + 1)
+		default:
+			return m.setTab(int(s[0] - '1'))
+		}
 	case key.Matches(msg, m.keys.Help):
 		if m.height < 20 {
 			m.addLog(levelWarning, "resize the window to see full help")
@@ -155,8 +168,10 @@ func (m *model) handleKey(msg tea.KeyPressMsg) tea.Cmd {
 			m.toggleSelected()
 			return nil
 		}
+		t := m.activeTable()
 		var cmd tea.Cmd
-		m.tbl, cmd = m.tbl.Update(msg)
+		t, cmd = t.Update(msg)
+		m.setActiveTable(t)
 		return cmd
 
 	case focusLog:
@@ -186,15 +201,22 @@ func (m *model) handleClick(msg tea.MouseClickMsg) tea.Cmd {
 	case y >= m.layout.searchY && y < m.layout.searchY+m.layout.searchH:
 		return m.setFocus(focusSearch)
 
+	case y >= m.layout.tabsY && y < m.layout.tabsY+m.layout.tabsH:
+		if i := m.tabAt(msg.X); i >= 0 {
+			return m.setTab(i)
+		}
+		return nil
+
 	case y >= m.layout.mainY && y < m.layout.mainY+m.layout.mainH:
 		cmd := m.setFocus(focusMain)
 		// Table body starts after the panel border and the table header.
 		row := y - (m.layout.mainY + 1) - 2
 		if row >= 0 {
-			start, end := m.tbl.VisibleIndices()
+			t := m.activeTable()
+			start, end := t.VisibleIndices()
 			idx := start + row
-			if idx >= start && idx <= end && idx < m.tbl.TotalRows() {
-				m.tbl = m.tbl.WithHighlightedRow(idx)
+			if idx >= start && idx <= end && idx < t.TotalRows() {
+				m.setActiveTable(t.WithHighlightedRow(idx))
 			}
 		}
 		return cmd
@@ -211,12 +233,14 @@ func (m *model) handleWheel(msg tea.MouseWheelMsg) tea.Cmd {
 	switch {
 	case y >= m.layout.mainY && y < m.layout.mainY+m.layout.mainH:
 		m.setFocus(focusMain)
+		t := m.activeTable()
 		switch msg.Button {
 		case tea.MouseWheelDown:
-			m.tbl = m.tbl.PageDown()
+			t = t.PageDown()
 		case tea.MouseWheelUp:
-			m.tbl = m.tbl.PageUp()
+			t = t.PageUp()
 		}
+		m.setActiveTable(t)
 		return nil
 
 	case y >= m.layout.logY && y < m.layout.logY+m.layout.logH:
@@ -230,8 +254,30 @@ func (m *model) handleWheel(msg tea.MouseWheelMsg) tea.Cmd {
 }
 
 func (m *model) cycleFocus(delta int) tea.Cmd {
-	f := (m.focus + delta + focusCount) % focusCount
+	f := m.focus
+	for range focusCount {
+		f = (f + delta + focusCount) % focusCount
+		if f != focusLog || m.tab == tabDetails {
+			break
+		}
+	}
 	return m.setFocus(f)
+}
+
+// setTab switches the content shown below the search bar.
+func (m *model) setTab(i int) tea.Cmd {
+	if i < 0 || i >= tabCount || i == m.tab {
+		return nil
+	}
+
+	m.tab = i
+	*m = m.resize()
+	m.addLog(levelInfo, "tab: %s", tabNames[i])
+
+	if m.focus == focusLog && m.tab == tabPackages {
+		return m.setFocus(focusMain)
+	}
+	return m.setFocus(m.focus)
 }
 
 func (m *model) setFocus(f int) tea.Cmd {
@@ -239,8 +285,13 @@ func (m *model) setFocus(f int) tea.Cmd {
 		return nil
 	}
 
+	if f == focusLog && m.tab == tabPackages {
+		return nil
+	}
+
 	m.focus = f
-	m.tbl = m.tbl.Focused(f == focusMain)
+	m.list = m.list.Focused(f == focusMain && m.tab == tabPackages)
+	m.tbl = m.tbl.Focused(f == focusMain && m.tab == tabDetails)
 
 	if f == focusSearch {
 		m.search.CursorEnd()

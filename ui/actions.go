@@ -14,6 +14,7 @@ func (m *model) applyFilter(q string) {
 
 	prev := m.query
 	m.query = q
+	m.list = m.list.WithFilterInputValue(q)
 	m.tbl = m.tbl.WithFilterInputValue(q)
 
 	if q == "" {
@@ -23,7 +24,7 @@ func (m *model) applyFilter(q string) {
 		return
 	}
 
-	n := m.tbl.TotalRows()
+	n := m.visibleRows()
 	if n == 0 {
 		m.addLog(levelWarning, "no matches for %q", q)
 		return
@@ -32,7 +33,7 @@ func (m *model) applyFilter(q string) {
 }
 
 func (m *model) toggleSelected() {
-	row := m.tbl.HighlightedRow()
+	row := m.activeTable().HighlightedRow()
 	if row.Data == nil {
 		return
 	}

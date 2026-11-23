@@ -40,7 +40,7 @@ func (m model) statusView() string {
 
 	parts = append(parts,
 		lipgloss.NewStyle().Foreground(t.muted).
-			Render(fmt.Sprintf("%d/%d packages", m.tbl.TotalRows(), len(m.items))),
+			Render(fmt.Sprintf("%d/%d packages", m.visibleRows(), len(m.items))),
 		lipgloss.NewStyle().Foreground(t.muted).
 			Render("focus: "+focusName(m.focus)),
 	)
@@ -114,7 +114,7 @@ func (m model) fullHelpRows() int {
 
 func (m model) windowTitle() string {
 	if m.query != "" {
-		return fmt.Sprintf("abyss · %s (%d)", m.query, m.tbl.TotalRows())
+		return fmt.Sprintf("abyss · %s (%d)", m.query, m.visibleRows())
 	}
 	return fmt.Sprintf("abyss · %d packages", len(m.items))
 }
