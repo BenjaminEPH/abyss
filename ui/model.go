@@ -43,19 +43,19 @@ func initialModel() model {
 		help:        help.New(),
 		spinner:     spinner.New(spinner.WithSpinner(spinner.MiniDot)),
 		items: []item{
-			{title: "Buy Carrots", tag: "shopping"},
-			{title: "Buy celery", tag: "shopping"},
-			{title: "Review pull request", tag: "work"},
-			{title: "Write release notes", tag: "work", done: true},
-			{title: "Water the plants", tag: "home"},
-			{title: "Read 20 pages", tag: "personal", done: true},
+			{name: "bash", version: "5.2.37", revision: "1", repository: "core", size: "1.8 MiB", description: "The GNU Bourne Again shell"},
+			{name: "coreutils", version: "9.5", revision: "2", repository: "core", size: "7.2 MiB", description: "The basic file, shell and text manipulation utilities"},
+			{name: "git", version: "2.47.1", revision: "1", repository: "extra", size: "14.5 MiB", description: "The fast distributed version control system", done: true},
+			{name: "go", version: "1.23.4", revision: "1", repository: "extra", size: "242.0 MiB", description: "Core compiler tools for the Go programming language"},
+			{name: "neovim", version: "0.10.3", revision: "1", repository: "extra", size: "28.4 MiB", description: "Fork of Vim aiming to improve user experience", done: true},
+			{name: "ripgrep", version: "14.1.1", revision: "1", repository: "extra", size: "5.1 MiB", description: "A search tool that combines the usability of ag with the speed of grep"},
 		},
 	}
 	m.theme = newTheme(m.dark)
 
 	m.search = textinput.New()
 	m.search.Prompt = "⌕ "
-	m.search.Placeholder = "Search tasks or tags…"
+	m.search.Placeholder = "Search packages…"
 	m.search.CharLimit = 80
 	m.search.Focus()
 
@@ -70,7 +70,7 @@ func initialModel() model {
 	m = m.resize()
 
 	m.addLog(levelInfo, "abyss started")
-	m.addLog(levelSuccess, "%d tasks loaded", len(m.items))
+	m.addLog(levelSuccess, "%d packages loaded", len(m.items))
 	m.addLog(levelInfo, "tab changes focus · / search · ? help")
 	m.logs.GotoBottom()
 

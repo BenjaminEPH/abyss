@@ -40,7 +40,7 @@ func (m model) statusView() string {
 
 	parts = append(parts,
 		lipgloss.NewStyle().Foreground(t.muted).
-			Render(fmt.Sprintf("%d/%d tasks", m.tbl.TotalRows(), len(m.items))),
+			Render(fmt.Sprintf("%d/%d packages", m.tbl.TotalRows(), len(m.items))),
 		lipgloss.NewStyle().Foreground(t.muted).
 			Render("focus: "+focusName(m.focus)),
 	)
@@ -116,7 +116,7 @@ func (m model) windowTitle() string {
 	if m.query != "" {
 		return fmt.Sprintf("abyss · %s (%d)", m.query, m.tbl.TotalRows())
 	}
-	return fmt.Sprintf("abyss · %d tasks", len(m.items))
+	return fmt.Sprintf("abyss · %d packages", len(m.items))
 }
 
 func (m model) programStatus() *tea.ProgramStatus {
@@ -128,7 +128,7 @@ func (m model) programStatus() *tea.ProgramStatus {
 	}
 	if m.loading {
 		status.State = tea.ProgramStateWorking
-		status.Message = "filtering tasks"
+		status.Message = "filtering packages"
 	}
 	return status
 }

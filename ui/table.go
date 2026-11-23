@@ -48,13 +48,19 @@ func (m *model) rebuildTable() {
 
 func (m *model) tableColumns() []table.Column {
 	return []table.Column{
-		table.NewColumn(columnKeyDone, "Done", 5).
-			WithStyle(lipgloss.NewStyle().Align(lipgloss.Center)),
-		table.NewFlexColumn(columnKeyTitle, "Task", 1).
+		table.NewColumn(columnKeyName, "Name", 18).
 			WithFiltered(true),
-		table.NewColumn(columnKeyTag, "Tag", 12).
+		table.NewColumn(columnKeyVersion, "Version", 10).
+			WithFiltered(true),
+		table.NewColumn(columnKeyRevision, "Revision", 9).
+			WithFiltered(true),
+		table.NewColumn(columnKeyRepository, "Repository", 12).
 			WithFiltered(true).
 			WithStyle(lipgloss.NewStyle().Foreground(m.theme.muted)),
+		table.NewColumn(columnKeySize, "Size", 9).
+			WithStyle(lipgloss.NewStyle().Align(lipgloss.Right)),
+		table.NewFlexColumn(columnKeyDescription, "Description", 1).
+			WithFiltered(true),
 	}
 }
 
@@ -62,19 +68,16 @@ func (m *model) buildTableRows() []table.Row {
 	rows := make([]table.Row, 0, len(m.items))
 
 	for i, it := range m.items {
-		glyph := "○"
-		glyphStyle := lipgloss.NewStyle().Foreground(m.theme.muted)
-		if it.done {
-			glyph = "✓"
-			glyphStyle = lipgloss.NewStyle().Foreground(m.theme.success).Bold(true)
-		}
 
 		rows = append(rows, table.NewRow(table.RowData{
-			columnKeyID:     i,
-			columnKeyDone:   table.NewStyledCell(glyph, glyphStyle),
-			columnKeyTitle:  it.title,
-			columnKeyTag:    "#" + it.tag,
-			columnKeyIsDone: it.done,
+			columnKeyID:          i,
+			columnKeyName:        it.name,
+			columnKeyVersion:     it.version,
+			columnKeyRevision:    it.revision,
+			columnKeyRepository:  it.repository,
+			columnKeySize:        it.size,
+			columnKeyDescription: it.description,
+			columnKeyIsDone:      it.done,
 		}))
 	}
 

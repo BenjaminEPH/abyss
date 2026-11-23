@@ -134,7 +134,7 @@ func (m model) searchBadge() string {
 	if m.query != "" {
 		return fmt.Sprintf("%d results", m.tbl.TotalRows())
 	}
-	return fmt.Sprintf("%d tasks", len(m.items))
+	return fmt.Sprintf("%d packages", len(m.items))
 }
 
 func (m model) mainBadge() string {

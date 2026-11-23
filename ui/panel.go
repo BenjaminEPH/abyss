@@ -12,7 +12,7 @@ func focusName(focus int) string {
 	case focusSearch:
 		return "search"
 	case focusMain:
-		return "tasks"
+		return "packages"
 	case focusLog:
 		return "log"
 	}

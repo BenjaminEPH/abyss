@@ -12,17 +12,24 @@ const (
 )
 
 const (
-	columnKeyID     = "id"
-	columnKeyDone   = "done"
-	columnKeyTitle  = "title"
-	columnKeyTag    = "tag"
-	columnKeyIsDone = "is_done"
+	columnKeyID          = "id"
+	columnKeyName        = "name"
+	columnKeyVersion     = "version"
+	columnKeyRevision    = "revision"
+	columnKeyRepository  = "repository"
+	columnKeySize        = "size"
+	columnKeyDescription = "description"
+	columnKeyIsDone      = "is_done"
 )
 
 type item struct {
-	title string
-	tag   string
-	done  bool
+	name        string
+	version     string
+	revision    string
+	repository  string
+	size        string
+	description string
+	done        bool
 }
 
 type logLevel int

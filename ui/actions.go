@@ -18,7 +18,7 @@ func (m *model) applyFilter(q string) {
 
 	if q == "" {
 		if prev != "" {
-			m.addLog(levelInfo, "filter cleared · %d tasks", len(m.items))
+			m.addLog(levelInfo, "filter cleared · %d packages", len(m.items))
 		}
 		return
 	}
@@ -44,9 +44,9 @@ func (m *model) toggleSelected() {
 
 	m.items[id].done = !m.items[id].done
 	if m.items[id].done {
-		m.addLog(levelSuccess, "completed: %s", m.items[id].title)
+		m.addLog(levelSuccess, "completed: %s", m.items[id].name)
 	} else {
-		m.addLog(levelInfo, "reopened: %s", m.items[id].title)
+		m.addLog(levelInfo, "reopened: %s", m.items[id].name)
 	}
 	m.refreshTableRows()
 }
