@@ -19,7 +19,7 @@ func (m *model) applyFilter(q string) {
 
 	if q == "" {
 		if prev != "" {
-			m.addLog(levelInfo, "filter cleared · %d packages", len(m.items))
+			m.addLog(levelInfo, "filter cleared · %d packages", m.total())
 		}
 		return
 	}
@@ -32,7 +32,13 @@ func (m *model) applyFilter(q string) {
 	m.addLog(levelInfo, "filter %q · %d matches", q, n)
 }
 
+// toggleSelected installs/removes the highlighted package. The packages tab
+// is a read-only view of what xbps reports, so only the details tab toggles.
 func (m *model) toggleSelected() {
+	if m.tab != tabDetails {
+		return
+	}
+
 	row := m.activeTable().HighlightedRow()
 	if row.Data == nil {
 		return
@@ -43,11 +49,11 @@ func (m *model) toggleSelected() {
 		return
 	}
 
-	m.items[id].installed = !m.items[id].installed
-	if m.items[id].installed {
-		m.addLog(levelSuccess, "installed: %s", m.items[id].name)
+	m.items[id].Installed = !m.items[id].Installed
+	if m.items[id].Installed {
+		m.addLog(levelSuccess, "installed: %s", m.items[id].Name)
 	} else {
-		m.addLog(levelInfo, "removed: %s", m.items[id].name)
+		m.addLog(levelInfo, "removed: %s", m.items[id].Name)
 	}
 	m.refreshTableRows()
 }

@@ -40,7 +40,7 @@ func (m model) statusView() string {
 
 	parts = append(parts,
 		lipgloss.NewStyle().Foreground(t.muted).
-			Render(fmt.Sprintf("%d/%d packages", m.visibleRows(), len(m.items))),
+			Render(fmt.Sprintf("%d/%d packages", m.visibleRows(), m.total())),
 		lipgloss.NewStyle().Foreground(t.muted).
 			Render("focus: "+focusName(m.focus)),
 	)
@@ -116,7 +116,7 @@ func (m model) windowTitle() string {
 	if m.query != "" {
 		return fmt.Sprintf("abyss · %s (%d)", m.query, m.visibleRows())
 	}
-	return fmt.Sprintf("abyss · %d packages", len(m.items))
+	return fmt.Sprintf("abyss · %d packages", m.total())
 }
 
 func (m model) programStatus() *tea.ProgramStatus {
@@ -140,7 +140,7 @@ func (m model) progressBar() *tea.ProgressBar {
 
 	installed := 0
 	for _, it := range m.items {
-		if it.installed {
+		if it.Installed {
 			installed++
 		}
 	}

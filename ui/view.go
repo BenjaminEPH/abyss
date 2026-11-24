@@ -134,23 +134,21 @@ func (m model) searchBadge() string {
 	if m.query != "" {
 		return fmt.Sprintf("%d results", m.visibleRows())
 	}
-	return fmt.Sprintf("%d packages", len(m.items))
+	return fmt.Sprintf("%d packages", m.total())
 }
 
 func (m model) mainBadge() string {
 	installed := 0
 	for _, it := range m.items {
-		if it.installed {
+		if it.Installed {
 			installed++
 		}
 	}
 
-	pct := 0
-	if len(m.items) > 0 {
-		pct = installed * 100 / len(m.items)
+	badge := fmt.Sprintf("%d/%d", m.visibleRows(), m.total())
+	if m.tab == tabDetails && len(m.items) > 0 {
+		badge += fmt.Sprintf(" · %d%% installed", installed*100/len(m.items))
 	}
-
-	badge := fmt.Sprintf("%d/%d · %d%% installed", m.visibleRows(), len(m.items), pct)
 	if pages := m.maxPages(); pages > 1 {
 		badge += fmt.Sprintf(" · page %d/%d", m.currentPage(), pages)
 	}

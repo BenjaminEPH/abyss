@@ -2,6 +2,7 @@ package ui
 
 import (
 	"strconv"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 	"github.com/evertras/bubble-table/table"
@@ -38,8 +39,9 @@ func (m *model) styledTable(cols []table.Column, rows []table.Row, focused bool)
 					Foreground(t.selectedFg).
 					Bold(true)
 			}
-			if installed {
-				return lipgloss.NewStyle().Foreground(t.success)
+			// Installed rows use the normal text color; anything else is dimmed.
+			if !installed {
+				return lipgloss.NewStyle().Foreground(t.muted)
 			}
 			return lipgloss.NewStyle()
 		}).
@@ -76,12 +78,14 @@ func (m *model) listColumns() []table.Column {
 	return []table.Column{
 		table.NewColumn(columnKeyIndex, "#", 5).
 			WithStyle(lipgloss.NewStyle().Foreground(m.theme.muted).Align(lipgloss.Right)),
-		table.NewColumn(columnKeyStatus, "Status", 11).
-			WithFiltered(true),
+		table.NewColumn(columnKeyStatus, "Status", 8).
+			WithFiltered(true).
+			WithStyle(lipgloss.NewStyle().Foreground(m.theme.accent)),
 		table.NewColumn(columnKeyName, "Name", 20).
 			WithFiltered(true),
 		table.NewFlexColumn(columnKeyDescription, "Package Description", 1).
-			WithFiltered(true),
+			WithFiltered(true).
+			WithStyle(lipgloss.NewStyle().Foreground(m.theme.muted)),
 	}
 }
 
@@ -104,21 +108,16 @@ func (m *model) tableColumns() []table.Column {
 }
 
 func (m *model) buildListRows() []table.Row {
-	rows := make([]table.Row, 0, len(m.items))
+	rows := make([]table.Row, 0, len(m.packages))
 
-	for i, it := range m.items {
-		status := "available"
-		if it.installed {
-			status = "installed"
-		}
-
+	for i, p := range m.packages {
 		rows = append(rows, table.NewRow(table.RowData{
 			columnKeyID:          i,
 			columnKeyIndex:       strconv.Itoa(i + 1),
-			columnKeyStatus:      status,
-			columnKeyName:        it.name,
-			columnKeyDescription: it.description,
-			columnKeyInstalled:   it.installed,
+			columnKeyStatus:      p.Status,
+			columnKeyName:        p.Name,
+			columnKeyDescription: p.Description,
+			columnKeyInstalled:   strings.HasPrefix(p.Status, "ii"),
 		}))
 	}
 
@@ -131,13 +130,13 @@ func (m *model) buildTableRows() []table.Row {
 	for i, it := range m.items {
 		rows = append(rows, table.NewRow(table.RowData{
 			columnKeyID:          i,
-			columnKeyName:        it.name,
-			columnKeyVersion:     it.version,
-			columnKeyRevision:    it.revision,
-			columnKeyRepository:  it.repository,
-			columnKeySize:        it.size,
-			columnKeyDescription: it.description,
-			columnKeyInstalled:   it.installed,
+			columnKeyName:        it.Name,
+			columnKeyVersion:     it.Version,
+			columnKeyRevision:    it.Revision,
+			columnKeyRepository:  it.Repository,
+			columnKeySize:        it.Size,
+			columnKeyDescription: it.Description,
+			columnKeyInstalled:   it.Installed,
 		}))
 	}
 
@@ -160,6 +159,14 @@ func (m *model) sizeTable() {
 	// the table still accounts for the hidden outer border
 	m.list = m.list.WithTargetWidth(contentW + 2).WithPageSize(rows)
 	m.tbl = m.tbl.WithTargetWidth(contentW + 2).WithPageSize(rows)
+}
+
+// total is the number of unfiltered rows in the active tab.
+func (m model) total() int {
+	if m.tab == tabDetails {
+		return len(m.items)
+	}
+	return len(m.packages)
 }
 
 func (m model) visibleRows() int {
